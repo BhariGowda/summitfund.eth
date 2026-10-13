@@ -112,6 +112,7 @@ contract EverestOrBust {
     constructor(address _creator, address _usdc, address _usdt, uint256 _start) {
         if (_creator == address(0)) revert NotCreator();
         if (_usdc == address(0) || _usdt == address(0)) revert UnsupportedToken();
+        if (_usdc == _usdt) revert UnsupportedToken();
         if (_start < block.timestamp) revert InvalidStartTime();
         creator = _creator;
         USDC = _usdc;

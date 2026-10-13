@@ -1140,3 +1140,27 @@ contract EverestOrBustStartTimeValidationTest is Test {
         assertEq(campaign.start(), 1_800_000_000);
     }
 }
+
+/// @dev Constructor token-address guards
+contract EverestOrBustTokenAddressGuardsTest is Test {
+    MockERC20 usdc;
+    MockERC20 usdt;
+
+    function setUp() public {
+        usdc = new MockERC20();
+        usdt = new MockERC20();
+        usdc.setDecimals(6);
+        usdt.setDecimals(6);
+    }
+
+    function test_RevertWhen_SameTokenForUsdcAndUsdt() public {
+        vm.expectRevert(EverestOrBust.UnsupportedToken.selector);
+        new EverestOrBust(address(this), address(usdc), address(usdc), block.timestamp + 1);
+    }
+
+    function test_Constructor_AcceptsDistinctTokens() public {
+        EverestOrBust c = new EverestOrBust(address(this), address(usdc), address(usdt), block.timestamp + 1);
+        assertEq(c.USDC(), address(usdc));
+        assertEq(c.USDT(), address(usdt));
+    }
+}
