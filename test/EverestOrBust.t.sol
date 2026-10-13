@@ -780,7 +780,7 @@ contract EverestOrBustBlacklistResilienceTest is Test {
     }
 
     function test_RevertWhen_ClaimStuckWithNothingOwed() public {
-        vm.expectRevert(EverestOrBust.NothingToRefund.selector);
+        vm.expectRevert(EverestOrBust.NothingToClaim.selector);
         campaign.claimStuck(applyMe, address(usdc));
     }
 

@@ -57,6 +57,7 @@ contract EverestOrBust {
     error ZeroAmount();
     error CapExceeded();
     error NothingToRefund();
+    error NothingToClaim();
     error TokenTransferFailed();
 
     /*//////////////////////////////////////////////////////////////
@@ -266,7 +267,7 @@ contract EverestOrBust {
     /// @param token USDC or USDT
     function claimStuck(address to, address token) external nonReentrant {
         uint256 amount = stuckBalance[to][token];
-        if (amount == 0) revert NothingToRefund();
+        if (amount == 0) revert NothingToClaim();
         stuckBalance[to][token] = 0;
         _sendToken(token, to, amount);
         emit StuckClaimed(to, token, amount);
