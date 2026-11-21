@@ -27,6 +27,12 @@ contract EverestOrBust {
     /// @notice Scale factor for 6-decimal tokens (USDC, USDT)
     uint256 private constant SCALE_6 = 1e12;
 
+    /// @notice Smallest contribution request accepted, $1.00 normalized to 18 decimals.
+    /// @dev Checked on the requested amount before any cap or goal clamp, so a final
+    ///      top-up clamped below $1 still succeeds. Raises the cost of inflating
+    ///      contributorCount from near zero to $1 of real, goal-counting money.
+    uint256 public constant MIN_CONTRIBUTION = 1e18;
+
     /*//////////////////////////////////////////////////////////////
                           REENTRANCY GUARD
     //////////////////////////////////////////////////////////////*/
@@ -56,6 +62,7 @@ contract EverestOrBust {
     error UnsupportedToken();
     error ZeroAmount();
     error CapExceeded();
+    error BelowMinimum();
     error NothingToRefund();
     error NothingToClaim();
     error TokenTransferFailed();
@@ -140,6 +147,7 @@ contract EverestOrBust {
         if (totalRaisedNormalized >= GOAL) revert GoalReached();
 
         uint256 normalized = _normalize(token, amount);
+        if (normalized < MIN_CONTRIBUTION) revert BelowMinimum();
 
         // Cap to whichever is smaller: the caller's remaining per-address allowance,
         // or the campaign's remaining goal. Both must be respected simultaneously so
