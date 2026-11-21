@@ -785,8 +785,8 @@ contract EverestOrBustBlacklistResilienceTest is Test {
     }
 
     /// @dev claimStuck() intentionally reverts (does not re-stuck) if still blacklisted.
-    /// This is correct: unlike refund()/withdraw() which touch three tokens per call and
-    /// must not let one bad token trap the other two, claimStuck() touches exactly one
+    /// This is correct: unlike refund()/withdraw() which touch two tokens per call and
+    /// must not let one bad token trap the other, claimStuck() touches exactly one
     /// token per call. A revert here traps nothing else and gives honest feedback that
     /// the block is still active, rather than silently swallowing the failure.
     function test_ClaimStuck_RevertsIfStillBlacklisted_DoesNotSilentlySwallow() public {

@@ -187,6 +187,9 @@ contract EverestOrBust {
     //////////////////////////////////////////////////////////////*/
 
     /// @notice Withdraw all funds to the creator after a successful campaign.
+    /// @dev Sweeps the full token balance, including any tokens sent directly to this
+    ///      address outside contribute(). Uses _trySendToken because it touches two
+    ///      tokens, so one frozen token cannot trap the other.
     function withdraw() external nonReentrant {
         if (msg.sender != creator) revert NotCreator();
         if (block.timestamp <= deadline) revert CampaignNotEnded();
@@ -210,6 +213,9 @@ contract EverestOrBust {
     //////////////////////////////////////////////////////////////*/
 
     /// @notice Reclaim full contribution if the goal was not met by deadline.
+    /// @dev Pays back only per-address tracked amounts. Tokens sent directly to this
+    ///      address are never attributed to a sender and are not refundable.
+    ///      Uses _trySendToken so one frozen token cannot trap the other.
     function refund() external nonReentrant {
         if (block.timestamp <= deadline) revert CampaignNotEnded();
         if (totalRaisedNormalized >= GOAL) revert GoalReached();
@@ -273,6 +279,8 @@ contract EverestOrBust {
     /// @notice Reclaim a token transfer that previously failed (e.g. blacklisted by USDC/USDT).
     /// @param to    The address whose stuck balance is being claimed
     /// @param token USDC or USDT
+    /// @dev Callable by anyone, but funds always settle to `to`, never to msg.sender.
+    ///      Uses the reverting _sendToken because it touches a single token per call.
     function claimStuck(address to, address token) external nonReentrant {
         uint256 amount = stuckBalance[to][token];
         if (amount == 0) revert NothingToClaim();
