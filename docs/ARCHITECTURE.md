@@ -5,7 +5,7 @@
 - **CrowdFund.sol** — single campaign escrow (ETH or ERC20). All-or-nothing: creator withdraws on success, contributors refund on failure. Chain-agnostic, unaffected by network choice below.
 - **CrowdFundFactory.sol** — CREATE2 deployer with predictable addresses and per-creator campaign tracking. Chain-agnostic.
 - **MilestoneCrowdFund.sol** — milestone-based fund release with contribution-weighted voting. Rejected milestones trigger pro-rata refunds. Chain-agnostic, standalone portfolio piece — not used by EverestOrBust, which needs a simpler one-time all-or-nothing outcome rather than staged release.
-- **EverestOrBust.sol** — the actual Everest 2027 fundraise contract, on Avalanche C-Chain. USDC + USDT only, $6.9 per-address cap, $69,000 goal (10,000 contributors), 69-day campaign starting Dec 10 2026. No price oracle — stablecoins only, no DAI. Contributions close automatically once the goal is reached. Fully independent contract, no dependency on the other three.
+- **EverestOrBust.sol** — the actual Everest fundraise contract, on Avalanche C-Chain. USDC + USDT only, $6.9 per-address cap, $69,000 goal (10,000 contributors), 69-day campaign starting at the deploy-time start date. No price oracle — stablecoins only, no DAI. Contributions close automatically once the goal is reached. Fully independent contract, no dependency on the other three.
 
 ## Design Patterns
 

@@ -4,7 +4,7 @@ A decentralized crowdfunding protocol built in Solidity — the smart contract i
 
 ## The Real Use Case
 
-In April 2027 I'm attempting to summit Mount Everest. The goal is $69,000. No bank, no Kickstarter, no middleman — the funds are held on-chain, contributors get auto-refunds if the goal isn't met by the deadline.
+I'm attempting to summit Mount Everest. It is a multi-year physical project, so campaign dates will be announced before launch. The goal is $69,000. No bank, no Kickstarter, no middleman — the funds are held on-chain, contributors get auto-refunds if the goal isn't met by the deadline.
 
 This protocol is what makes that possible. It started as a single crowdfund contract for the EverestOrBust campaign. It grew into a full protocol suite with a factory and milestone-based fund releases as standalone portfolio pieces, alongside EverestOrBust as the real, deployed campaign.
 
@@ -12,7 +12,7 @@ This protocol is what makes that possible. It started as a single crowdfund cont
 
 ## Protocol
 
-**EverestOrBust.sol** — the actual campaign contract, on Avalanche C-Chain. USDC and USDT only. $6.9 cap per address. $69,000 goal, 10,000 contributors. 69-day campaign (Dec 10 2026 – Feb 17 2027). Auto-refund if goal not met. Contributions close automatically once the goal is reached. No price oracle — stablecoins only.
+**EverestOrBust.sol** — the actual campaign contract, on Avalanche C-Chain. USDC and USDT only. $6.9 cap per address. $69,000 goal, 10,000 contributors. 69-day campaign (start date set at deployment). Auto-refund if goal not met. Contributions close automatically once the goal is reached. No price oracle — stablecoins only.
 
 **CrowdFund.sol** — general-purpose single campaign escrow. ETH or any ERC20 token. Auto-refund if the goal isn't met by the deadline. Chain-agnostic, standalone.
 

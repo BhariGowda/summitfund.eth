@@ -37,8 +37,8 @@ forge script script/DeployEverestOrBust.s.sol --rpc-url fuji --broadcast --verif
 
 | Parameter | Value |
 |---|---|
-| Start | Dec 10 2026 00:00:00 UTC (`1765324800`) |
-| End | Feb 17 2027 00:00:00 UTC (start + 69 days) |
+| Start | Chosen at deployment (unix timestamp passed to the constructor) |
+| End | Start + 69 days |
 | Goal | $69,000 (69_000e18 normalized) |
 | Cap per address | $6.9 (6.9e18 normalized) |
 | Contributors needed | 10,000 |
