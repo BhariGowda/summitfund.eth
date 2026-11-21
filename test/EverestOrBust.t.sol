@@ -1164,3 +1164,96 @@ contract EverestOrBustTokenAddressGuardsTest is Test {
         assertEq(c.USDT(), address(usdt));
     }
 }
+
+/// @dev $1 minimum contribution (F-01)
+contract EverestOrBustMinimumContributionTest is Test {
+    EverestOrBust campaign;
+    MockERC20 usdc;
+    MockERC20 usdt;
+
+    address creator = makeAddr("creator");
+    address contributor = makeAddr("contributor");
+
+    uint256 constant START = 1765324800;
+
+    function setUp() public {
+        usdc = new MockERC20();
+        usdt = new MockERC20();
+        usdc.setDecimals(6);
+        usdt.setDecimals(6);
+        campaign = new EverestOrBust(creator, address(usdc), address(usdt), START);
+        vm.warp(START);
+        usdc.mint(contributor, 1000e6);
+        usdt.mint(contributor, 1000e6);
+    }
+
+    function test_MinContribution_IsOneDollarNormalized() public view {
+        assertEq(campaign.MIN_CONTRIBUTION(), 1e18);
+    }
+
+    function test_RevertWhen_BelowMinimum() public {
+        vm.startPrank(contributor);
+        usdc.approve(address(campaign), 999_999);
+        vm.expectRevert(EverestOrBust.BelowMinimum.selector);
+        campaign.contribute(address(usdc), 999_999);
+        vm.stopPrank();
+    }
+
+    function test_RevertWhen_BelowMinimumUSDT() public {
+        vm.startPrank(contributor);
+        usdt.approve(address(campaign), 999_999);
+        vm.expectRevert(EverestOrBust.BelowMinimum.selector);
+        campaign.contribute(address(usdt), 999_999);
+        vm.stopPrank();
+    }
+
+    function testFuzz_RevertWhen_BelowMinimum(uint256 amt) public {
+        amt = bound(amt, 1, 999_999);
+        vm.startPrank(contributor);
+        usdc.approve(address(campaign), amt);
+        vm.expectRevert(EverestOrBust.BelowMinimum.selector);
+        campaign.contribute(address(usdc), amt);
+        vm.stopPrank();
+    }
+
+    function test_Contribute_ExactMinimumSucceeds() public {
+        vm.startPrank(contributor);
+        usdc.approve(address(campaign), 1e6);
+        campaign.contribute(address(usdc), 1e6);
+        vm.stopPrank();
+        assertEq(campaign.contributedNormalized(contributor), 1e18);
+        assertEq(campaign.contributedUSDC(contributor), 1e6);
+        assertEq(campaign.contributorCount(), 1);
+    }
+
+    function test_DustCannotInflateContributorCount() public {
+        address sybil = address(0xBEEF);
+        usdc.mint(sybil, 1);
+        vm.startPrank(sybil);
+        usdc.approve(address(campaign), 1);
+        vm.expectRevert(EverestOrBust.BelowMinimum.selector);
+        campaign.contribute(address(usdc), 1);
+        vm.stopPrank();
+        assertEq(campaign.contributorCount(), 0);
+    }
+
+    function test_Contribute_TopUpClampedBelowMinimumSucceeds() public {
+        vm.startPrank(contributor);
+        usdc.approve(address(campaign), 7.4e6);
+        campaign.contribute(address(usdc), 6.4e6);
+        campaign.contribute(address(usdc), 1e6); // requests $1, clamps to the remaining $0.50
+        vm.stopPrank();
+        assertEq(campaign.contributedNormalized(contributor), 6.9e18);
+        assertEq(usdc.balanceOf(address(campaign)), 6.9e6);
+        assertEq(campaign.contributorCount(), 1);
+    }
+
+    function test_RevertWhen_TopUpRequestBelowMinimum() public {
+        vm.startPrank(contributor);
+        usdc.approve(address(campaign), 7e6);
+        campaign.contribute(address(usdc), 6.4e6);
+        vm.expectRevert(EverestOrBust.BelowMinimum.selector);
+        campaign.contribute(address(usdc), 0.5e6);
+        vm.stopPrank();
+    }
+}
