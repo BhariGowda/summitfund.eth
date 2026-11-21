@@ -14,3 +14,5 @@ node_modules/
 keystore/
 node_modules
 frontend/node_modules
+
+lcov.info
