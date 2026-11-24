@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.1.0] - 2026-11-24
+### Security
+- Goal cap: `contribute()` now caps against the remaining goal as well as the per-address cap (D-06)
+- Fee-on-transfer: any received-versus-requested mismatch now reverts instead of reconciling (D-07)
+- Constructor rejects a start time in the past (D-08) and identical USDC and USDT addresses (F-02)
+- Added a $1 minimum contribution so dust cannot inflate the contributor count (F-01)
+- `claimStuck()` now reverts with a dedicated `NothingToClaim` error (F-05)
+- NatSpec documents direct-transfer behavior and the permissionless `claimStuck()` (F-04, F-06)
+- Full defect and finding log in `docs/EVERESTORBUST_AUDIT_LOG.md`
+
+### Changed
+- Fixed campaign dates removed from the docs; the start date is chosen at deployment
+- `lcov.info` ignored, `foundry.lock` tracked
+
 ## [2.0.0] - 2026-08-XX
 ### Changed — Avalanche Pivot
 - **Network:** Ethereum mainnet + Sepolia → Avalanche C-Chain mainnet + Fuji testnet
